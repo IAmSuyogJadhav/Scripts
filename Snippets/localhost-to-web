@@ -1,0 +1,12 @@
+1) Gives you a random web address for localhost:PORT
+	ssh -R 80:localhost:PORT serveo.net
+
+2) Gives you name.serveo.net for localhost:PORT
+	ssh -R NAME:80:localhost:PORT serveo.net
+
+3) Gives you serveo.net:PORT1 for localhost:PORT
+	ssh -R PORT1:localhost:PORT serveo.net
+or
+	ssh -R NAME:PORT1:localhost:PORT serveo.net
+
+4) If SSH port is blocked, use -p 443 option with any of the above

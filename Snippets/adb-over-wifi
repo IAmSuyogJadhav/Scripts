@@ -1,0 +1,7 @@
+# First, run this. You can put any port besides 5555
+
+adb tcpip 5555
+
+# Now, make sure device is connected to same wifi network as PC and run this.
+
+adb connect <device IP>:5555

@@ -1,0 +1,116 @@
+#!/home/anon/anaconda3/bin/python
+import argparse
+from datetime import date
+import os
+from warnings import warn
+import shutil
+import sys
+
+
+class FileNotFound(Warning):
+    pass
+
+
+ap = argparse.ArgumentParser()
+ap.add_argument(
+    '--portfolio',
+    help='To create a portfolio project.',
+    action='store_true'
+    )
+ap.add_argument(
+    '--post',
+    help='To create a portfolio project.',
+    action='store_true'
+    )
+ap.add_argument(
+    'title',
+    help="The title for the new post/portfolio item",
+    nargs='?',
+    default='Untitled'
+    )
+ap.add_argument(
+    'category',
+    help="The category for the new post/portfolio item",
+    nargs='?',
+    default='projects'
+    )
+ap.add_argument(
+    'github',
+    help="The category for the new post/portfolio item",
+    nargs='?',
+    default=None
+    )
+ap.add_argument(
+    'thumb',
+    help="Path to the thumbnail file",
+    nargs='?',
+    default=None
+    )
+ap.add_argument(
+    'date',
+    help="Date for the post. Format: yyyy-mm-dd",
+    nargs='?',
+    default=str
+    (date.today()))
+
+args = ap.parse_args()
+
+if not (os.path.exists("./_posts")
+        or os.path.exists("./_portfolio")
+        or os.path.exists("./images/thumbs")):
+    print(
+        "Please run this command from a jekyll site's root folder. Exiting...")
+    sys.exit(0)
+
+# Ignore empty entries
+for arg in ['title', 'category', 'github']:
+    if eval(f'args.{arg}')=='-':
+        exec(f'args.{arg} = ""')
+
+
+if not (args.portfolio or args.post):
+    ap.error('Pass one of the following arguments: portfolio, post')
+
+if args.portfolio and args.post:
+    ap.error('Pass only one of the following arguments: portfolio, post')
+
+if (not os.path.isfile(args.thumb)):
+    message = f"The path '{args.thumb}' does not exist. Ignoring."
+    warn(message, FileNotFound)
+    args.thumb = None
+
+try:
+    yyyy, mm, dd = args.date.split('-')
+    assert len(yyyy) == 4
+    assert len(mm) == 2
+    assert len(dd) == 2
+except AssertionError:
+    print("Date format is incorrect. Please use yyyy-mm-dd")
+    sys.exit(0)
+
+
+yaml = f"""---
+layout: post
+hero-bg-color: "#000"
+{f'title: "{args.title}"' if args.title else f'title: "Untitled"'}
+date: {args.date}
+{f'category: {args.category}' if args.category else f'category: "Uncategorized"'}
+github: {f"{args.github}" if args.github else args.title}
+{f'thumb: "{os.path.basename(args.thumb)}"' if args.thumb else f'# thumb:""'}
+
+# subtitle: ""
+# worktype: ""
+# summary: ""
+# progress: 100
+---
+"""
+
+if args.thumb:
+    shutil.copy(args.thumb, "./images/thumbs/")
+
+with open(f"./_posts/{args.date}-{args.title}.md", 'w') as f:
+    f.write(yaml)
+
+if args.portfolio:
+    with open(f"./_portfolio/{args.title}.md", 'w') as f:
+        f.write(yaml)
