@@ -76,7 +76,8 @@ def get_last_state(models_dir, model_prefix='Model'):
     Expect models to be named as (regex): {model}-.*Epoch-\d*\.h5
     where {model} is the prefix of your model checkpoints, defaults to "Model".
     """
-    models = glob.glob(os.path.join(models_dir, f"{model_prefix}-.*.h5"))
+    path = os.path.join(models_dir, f"{model_prefix}-*.h5")
+    models = glob.glob(path)
 
     if models:
         pat = re.compile(f'.*/{model_prefix}-.*Epoch-(\\d*)\\.h5')
@@ -85,6 +86,7 @@ def get_last_state(models_dir, model_prefix='Model'):
         print(f"Found last model at:{last_model}\nEpoch no.: {epoch}")
         return last_model, epoch
     else:
+        print(f"No model found matching {path}")
         return os.path.join(models_dir, f"{model_prefix}-train_dice={{loss:.3f}}-val_dice={{val_loss:.3f}}-Epoch-{{epoch}}.h5"), 1
 
                             
