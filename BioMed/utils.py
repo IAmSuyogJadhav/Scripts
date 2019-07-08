@@ -83,9 +83,9 @@ def get_last_state(models_dir, model='Model'):
         last_model = sorted(models, reverse=True, key=lambda m: int(pat.findall(m)[0]))[0]
         return last_model, int(pat.findall(last_model)[0])
     else:
-        return os.path.join(models_dir, f"{model}-train_dice={loss:.3f}-val_dice={val_loss:.3f}-Epoch-{epoch}.h5", 1
+        return os.path.join(models_dir, f"{model}-train_dice={loss:.3f}-val_dice={val_loss:.3f}-Epoch-{epoch}.h5"), 1
 
-    
+                            
 def save_data_file(data, labels, h5_file):
     """
     For generating the data_file.h5 to be used with ellisdg/3DUnetCNN.
