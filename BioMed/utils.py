@@ -70,20 +70,20 @@ def save_nii(files, names, dir="./saved_nii"):
         writer.Execute(sitk.GetImageFromArray(file))
 
 
-def get_last_state(models_dir, model='Model'):
+def get_last_state(models_dir, model_prefix='Model'):
     r"""
     Gives out the path to the last model and its epoch number.
     Expect models to be named as (regex): {model}-.*Epoch-\d*\.h5
     where {model} is the prefix of your model checkpoints, defaults to "Model".
     """
-    models = glob.glob(os.path.join(models_dir, f"{model}-.*.h5"))
+    models = glob.glob(os.path.join(models_dir, f"{model_prefix}-.*.h5"))
 
     if models:
-        pat = re.compile(f'.*/{model}-.*Epoch-(\\d*)\\.h5')
+        pat = re.compile(f'.*/{model_prefix}-.*Epoch-(\\d*)\\.h5')
         last_model = sorted(models, reverse=True, key=lambda m: int(pat.findall(m)[0]))[0]
         return last_model, int(pat.findall(last_model)[0])
     else:
-        return os.path.join(models_dir, f"{model}-train_dice={{loss:.3f}}-val_dice={{val_loss:.3f}}-Epoch-{{epoch}}.h5"), 1
+        return os.path.join(models_dir, f"{model_prefix}-train_dice={{loss:.3f}}-val_dice={{val_loss:.3f}}-Epoch-{{epoch}}.h5"), 1
 
                             
 def save_data_file(data, labels, h5_file):
