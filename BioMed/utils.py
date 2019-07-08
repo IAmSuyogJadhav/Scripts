@@ -46,8 +46,10 @@ def get_coords(id, labels=None):
 
 def enlarge_label(img, coords, r=1):
     """
-    Expects shape to be (modalities, depth, width, height)
-    outputs segmentation of shape (1, depth, width, height)
+    Expects img.shape to be (modalities, depth, width, height).
+    coords is a list of tumor coodinates on img.
+    Outputs segmentation of shape (1, depth, width, height).
+    For use with ProstateX Challenge.
     """
     seg = np.zeros_like(img[0]).astype(np.uint8)
 
