@@ -81,7 +81,9 @@ def get_last_state(models_dir, model_prefix='Model'):
     if models:
         pat = re.compile(f'.*/{model_prefix}-.*Epoch-(\\d*)\\.h5')
         last_model = sorted(models, reverse=True, key=lambda m: int(pat.findall(m)[0]))[0]
-        return last_model, int(pat.findall(last_model)[0])
+        epoch = int(pat.findall(last_model)[0])
+        print(f"Found last model at:{last_model}\nEpoch no.: {epoch}")
+        return last_model, epoch
     else:
         return os.path.join(models_dir, f"{model_prefix}-train_dice={{loss:.3f}}-val_dice={{val_loss:.3f}}-Epoch-{{epoch}}.h5"), 1
 
