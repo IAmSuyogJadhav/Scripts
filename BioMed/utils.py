@@ -14,6 +14,10 @@ def read_img(img_path):
     return sitk.GetArrayFromImage(sitk.ReadImage(img_path))
 
 
+def normalize(img):
+    return (img - img.mean()) / img.std()
+
+
 def read_labels(labels_path):
     """
     For reading in labels of patches from ProstateX challenge.
