@@ -44,20 +44,40 @@ def get_coords(id, labels=None):
     return list(labels.coords[groups[2]])
 
 
-def enlarge_label(img, coords, r=1):
+def enlarge_label(img, coords, r=1, mode='area'):
     """
-    Expects img.shape to be (modalities, depth, width, height).
-    coords is a list of tumor coodinates on img.
-    Outputs segmentation of shape (1, depth, width, height).
-    For use with ProstateX Challenge.
+    Expects shape to be (modalities, depth, width, height)
+    outputs segmentation of shape (1, depth, width, height)
+    If mode is "volume", r should be a list of radii: [x_radius, y_radius z_radius]
     """
     seg = np.zeros_like(img[0]).astype(np.uint8)
 
-    for coord in coords:
-        frame = seg[coord[2] - 1, ...]
-        frame = cv2.rectangle(
-            frame, (coord[0]-1, coord[1]+1), (coord[0]+1, coord[1]-1), 1, -1)
-        seg[coord[2] - 1, ...] = frame
+    if mode == 'area':
+        for coord in coords:
+            frame = seg[coord[2] - 1, ...]
+            frame = cv2.rectangle(
+                frame, (coord[0]-r, coord[1]+r), (coord[0]+r, coord[1]-r), 1, -1)
+            seg[coord[2] - 1, ...] = frame
+
+    elif mode == 'volume':
+        try:
+            _ = len(r)
+            assert _ == 3, "In volume mode, r should be a list of radii in each"\
+                " dimension: [x_radius, y_radius z_radius]"
+        except:
+            assert 0, "In volume mode, r should be a list of radii in each"\
+                " dimension: [x_radius, y_radius z_radius]"
+        n_slices = seg.shape[0]
+        for coord in coords:
+            center = coord[2] - 1
+            for i in range(max(center - r[2], 0), min(center + r[2] + 1, n_slices)):
+                frame = seg[i, ...]
+                frame = cv2.rectangle(
+                    frame,
+                    (coord[0]-r[0], coord[1]+r[0]), (coord[0]+r[1], coord[1]-r[1]), 1, -1
+                    )
+                seg[i, ...] = frame
+
     return seg
 
 
@@ -68,8 +88,10 @@ def save_nii(files, names, dir="./saved_nii"):
     writer = sitk.ImageFileWriter()
     os.makedirs(dir, exist_ok=True)
     for file, name in zip(files, names):
-        writer.SetFileName(f"{dir}/{name}.nii.gz" if not name.endswith('nii.gz') else f"{dir}/{name}")
+        path = os.path.join(dir, f'{name}.nii.gz' if not name.endswith('nii.gz') else name)
+        writer.SetFileName(path)
         writer.Execute(sitk.GetImageFromArray(file))
+        print(f"Succesfully saved {path}")
 
 
 def get_last_state(models_dir, model_prefix='Model'):
