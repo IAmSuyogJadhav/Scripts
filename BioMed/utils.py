@@ -6,6 +6,7 @@ import tables
 import pandas as pd
 import numpy as np
 import SimpleITK as sitk
+import nibabel as nib
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
 
@@ -134,3 +135,24 @@ def elastic_transform(images, alpha, sigma, random_state=None):
         out.append(np.array(out_))
 
     return np.array(out)
+
+
+def get_affine(nii_path):
+    """
+    Get the affine matrix from a nii image.
+    """
+    return nib.load(nii_path).affine
+
+
+def apply_affine(coords, affine):
+    """
+    Apply affine transform to the given `coords`(x, y, z coordinates). The
+    affine matrix needs to be provided.
+    """
+    assert coords is not None and len(coords) == 3, 'Must provide a list of'\
+        'coordinates: [x, y, z]'
+    M = affine[:3, :3]
+    abc = affine[:3, 3]
+
+    return M.dot(coords) + abc
+    # return affine.dot(img)  # This is correct too.
