@@ -116,10 +116,10 @@ def get_last_state(models_dir, model_prefix='Model'):
         return last_model, epoch
     else:
         print(f"No model found matching {path}")
-        return os.path.join(models_dir, f"{model_prefix}-train_dice={{loss:.3f}}-val_dice={{val_loss:.3f}}-Epoch-{{epoch}}.h5"), 1
+        return os.path.join(models_dir, f"{model_prefix}-train_dice={{loss:.3f}}-val_dice={{val_loss:.3f}}-Epoch-{{epoch}}.h5"), 0
 
-                            
-def save_data_file(data, labels, h5_file):
+
+def save_data_file(data, labels, affine=None, h5_file='data_file.h5'):
     """
     For generating the data_file.h5 to be used with ellisdg/3DUnetCNN.
 
@@ -134,6 +134,8 @@ def save_data_file(data, labels, h5_file):
 
     f.create_carray('/', 'data', obj=data)
     f.create_carray('/', 'truth', obj=labels)
+    if affine is not None:
+        f.create_carray('/', 'affine', obj=affine)
     f.close()
 
 
