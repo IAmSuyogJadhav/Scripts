@@ -108,6 +108,10 @@ def get_last_state(models_dir, model_prefix='Model'):
     path = os.path.join(models_dir, f"{model_prefix}-*.h5")
     models = glob.glob(path)
 
+    re_escape = ['(', ')', '.']
+    for ch in re_escape:
+        model_prefix = model_prefix.replace(ch, '\' + ch)
+    
     if models:
         pat = re.compile(f'.*/{model_prefix}-.*Epoch-(\\d*)\\.h5')
         last_model = sorted(models, reverse=True, key=lambda m: int(pat.findall(m)[0]))[0]
