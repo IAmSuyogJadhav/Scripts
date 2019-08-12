@@ -110,7 +110,7 @@ def get_last_state(models_dir, model_prefix='Model'):
 
     re_escape = ['(', ')', '.']
     for ch in re_escape:
-        model_prefix = model_prefix.replace(ch, '\' + ch)
+        model_prefix = model_prefix.replace(ch, '\\' + ch)
     
     if models:
         pat = re.compile(f'.*/{model_prefix}-.*Epoch-(\\d*)\\.h5')
