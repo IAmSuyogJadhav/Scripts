@@ -9,11 +9,18 @@ import SimpleITK as sitk
 import nibabel as nib
 from scipy.ndimage.filters import gaussian_filter
 from scipy.ndimage.interpolation import map_coordinates
+from scipy.ndimage import zoom
 
 
 def read_img(img_path):
     return sitk.GetArrayFromImage(sitk.ReadImage(img_path))
 
+
+def resize(img, out_shape):
+    d, h, w = img.shape
+    factors = (out_shape[0] / d, out_shape[1] / h, out_shape[2] / w)
+    img_ = zoom(img, factors)
+    return img_
 
 def normalize(img):
     return (img - img.mean()) / img.std()
