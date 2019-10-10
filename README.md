@@ -1,2 +1,2 @@
 # Scripts
-Miscellaneous scripts that come handy in certain tasks.
+Collection of miscellaneous scripts that come handy in certain tasks.
