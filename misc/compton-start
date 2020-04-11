@@ -1,0 +1,14 @@
+#!/bin/sh
+status=$(xfconf-query -c xfwm4 -p /general/use_compositing)
+
+# Comment the lines below to disable notifications
+if [ $status = "false" ]; then
+    sudo pkill compton"
+    xfconf-query -Tc xfwm4 -p /general/use_compositing
+    notify-send -t 400 'Enabled XFWM4 compositing' --icon=video-display
+else
+    xfconf-query -Tc xfwm4 -p /general/use_compositing
+    compton &
+    notify-send -t 400 'Enabled Compton compositing' --icon=video-display
+fi
+exit
